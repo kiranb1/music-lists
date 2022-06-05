@@ -14,3 +14,12 @@
     color: #39311d;
   }
 }
+
+a {
+  color: #39311d;
+  text-decoration: none;
+  &:hover {
+    color: #7e7474;
+    text-decoration: underline;
+  }
+}
