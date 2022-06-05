@@ -1,0 +1,16 @@
+@import "custom";
+
+* {
+  font-family: sans-serif;
+}
+
+.main-container {
+  background-color: #39311d;
+  color: #c4b6b6;
+}
+
+.generated-list {
+  .list-group-item {
+    color: #39311d;
+  }
+}
