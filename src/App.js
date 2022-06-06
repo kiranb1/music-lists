@@ -1,14 +1,16 @@
-import axios from "axios";
 import "./App.scss";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
-import { InputGroup } from "react-bootstrap";
+import { InputGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import TrackListItem from "./components/TrackListItem";
 import { FormControl } from "react-bootstrap";
 import LoginBtn from "./components/LoginBtn";
 import { useState, useEffect } from "react";
 
+import { searchForTracks, searchForArtist } from "./api";
+
 const App = () => {
+  const [selectedDropdown, setSelectedDropdown] = useState("Track");
   const [token, setToken] = useState("");
   const [tracks, setTracks] = useState([]);
   const [searchKey, setSearchKey] = useState("submarine");
@@ -31,21 +33,18 @@ const App = () => {
     setToken(token);
   }, []);
 
-  const searchForTracks = async (e) => {
-    try {
-      const res = await axios.get("https://api.spotify.com/v1/search", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          q: searchKey,
-          type: "track",
-          limit: 10,
-        },
-      });
-      extractSongs(res.data.tracks.items);
-    } catch (err) {
-      console.log(err);
+  const handleDropdownSelect = (e) => {
+    setSelectedDropdown(e);
+  };
+
+  const search = (e) => {
+    if (selectedDropdown === "Track") {
+      searchForTracks(token, searchKey, extractSongs);
+    } else if (selectedDropdown === "Artist") {
+      searchForArtist(token, searchKey, extractSongs);
+    } else {
+      // TODO playlist search
+      console.log("Playlist search");
     }
   };
 
@@ -66,10 +65,20 @@ const App = () => {
         <h1 className="display-5 fw-bold">Music list generator</h1>
         <div className="col-lg-6 mx-auto">
           <p className="lead mb-4">
-            Enter a genre to get the top 10 tracks for it
+            Enter a genre/artist/track to get the top 10 tracks for it
           </p>
           <div className="d-grid d-sm-flex justify-content-sm-center">
             <InputGroup className="mb-3">
+              <DropdownButton
+                onSelect={handleDropdownSelect}
+                variant="secondary"
+                title={selectedDropdown}
+                id="input-group-dropdown-1"
+              >
+                <Dropdown.Item eventKey="Track">Track</Dropdown.Item>
+                <Dropdown.Item eventKey="Playlist">Playlist</Dropdown.Item>
+                <Dropdown.Item eventKey="Artist">Artist</Dropdown.Item>
+              </DropdownButton>
               <FormControl
                 placeholder="Search"
                 aria-label="User search query"
@@ -77,7 +86,7 @@ const App = () => {
                 aria-describedby="generate-song-list-btn"
               />
               <Button
-                onClick={searchForTracks}
+                onClick={search}
                 variant="primary"
                 id="generate-song-list-btn"
               >
