@@ -5,7 +5,7 @@ import LoginBtn from "./components/LoginBtn";
 import { useState, useEffect } from "react";
 import SearchBar from "./components/SearchBar";
 
-import { searchForTracks, searchForArtist } from "./api";
+import { searchForTracks, searchForArtist, searchForPlaylists } from "./api";
 
 const App = () => {
   const [searchKey, setSearchKey] = useState("submarine");
@@ -41,19 +41,24 @@ const App = () => {
     setTracks(songs);
   };
 
+  const extractPlaylists = (playlists) => {
+    // sort by popularity
+    playlists.sort((a, b) => b.popularity - a.popularity);
+    setTracks(playlists);
+  };
+
   const search = () => {
     if (selectedDropdown === "Track") {
       searchForTracks(token, searchKey, extractSongs);
     } else if (selectedDropdown === "Artist") {
       searchForArtist(token, searchKey, extractSongs);
     } else {
-      // TODO playlist search
-      console.log("Playlist search");
+      searchForPlaylists(token, searchKey, extractPlaylists);
     }
   };
 
   const listOfTracks = tracks.map((track, index) => (
-    <TrackListItem key={track.external_ids.isrc} track={track} />
+    <TrackListItem key={index} track={track} />
   ));
 
   return (
@@ -63,7 +68,7 @@ const App = () => {
         <h1 className="display-5 fw-bold">Music list generator</h1>
         <div className="col-lg-6 mx-auto">
           <p className="lead mb-4">
-            Enter a genre/artist/track to get the top 10 tracks for it
+            Enter a genre/artist/track to get the top 10 tracks/playlists for it
           </p>
           <SearchBar
             onSearch={search}

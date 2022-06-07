@@ -1,11 +1,20 @@
 import ListGroup from "react-bootstrap/ListGroup";
 
 export default function TrackListItem(track) {
-  return (
-    <ListGroup.Item as="li">
+  let listElement = "";
+  if (track.track.type === "playlist") {
+    listElement = (
+      <a href={track.track.uri} className="track-link">
+        {track.track.name} {`${track.track.tracks.total} tracks`}
+      </a>
+    );
+  } else {
+    listElement = (
       <a href={track.track.uri} className="track-link">
         {track.track.name} - {track.track.artists[0].name}
       </a>
-    </ListGroup.Item>
-  );
+    );
+  }
+
+  return <ListGroup.Item as="li">{listElement}</ListGroup.Item>;
 }

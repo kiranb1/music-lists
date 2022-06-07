@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const search = async (params, url, token, extractSongs) => {
+export const search = async (params, url, token) => {
   try {
     const res = await axios.get(url, {
       headers: {
@@ -28,6 +28,24 @@ export const searchForTracks = async (token, searchKey, extractSongs) => {
   );
 
   extractSongs(res.data.tracks.items);
+};
+
+export const searchForPlaylists = async (
+  token,
+  searchKey,
+  extractPlaylists
+) => {
+  const res = await search(
+    {
+      q: searchKey,
+      type: "playlist",
+      limit: 10,
+    },
+    "https://api.spotify.com/v1/search",
+    token
+  );
+
+  extractPlaylists(res.data.playlists.items);
 };
 
 export const searchForArtist = async (token, searchKey, extractSongs) => {

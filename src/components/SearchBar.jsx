@@ -34,7 +34,7 @@ export default function SearchBar(props) {
           placeholder="Search"
           aria-label="User search query"
           onChange={(e) => onInputEnter(e.target.value)}
-          aria-describedby="generate-song-list-btn"
+          aria-describedby="generate-song-list'-btn"
         />
         <Button
           type="submit"
