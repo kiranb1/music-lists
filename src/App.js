@@ -1,19 +1,17 @@
 import "./App.scss";
-import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
-import { InputGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import TrackListItem from "./components/TrackListItem";
-import { FormControl } from "react-bootstrap";
 import LoginBtn from "./components/LoginBtn";
 import { useState, useEffect } from "react";
+import SearchBar from "./components/SearchBar";
 
 import { searchForTracks, searchForArtist } from "./api";
 
 const App = () => {
-  const [selectedDropdown, setSelectedDropdown] = useState("Track");
+  const [searchKey, setSearchKey] = useState("submarine");
   const [token, setToken] = useState("");
   const [tracks, setTracks] = useState([]);
-  const [searchKey, setSearchKey] = useState("submarine");
+  const [selectedDropdown, setSelectedDropdown] = useState("Track");
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -37,7 +35,13 @@ const App = () => {
     setSelectedDropdown(e);
   };
 
-  const search = (e) => {
+  const extractSongs = (songs) => {
+    // sort by popularity
+    songs.sort((a, b) => b.popularity - a.popularity);
+    setTracks(songs);
+  };
+
+  const search = () => {
     if (selectedDropdown === "Track") {
       searchForTracks(token, searchKey, extractSongs);
     } else if (selectedDropdown === "Artist") {
@@ -46,12 +50,6 @@ const App = () => {
       // TODO playlist search
       console.log("Playlist search");
     }
-  };
-
-  const extractSongs = (songs) => {
-    // sort by popularity
-    songs.sort((a, b) => b.popularity - a.popularity);
-    setTracks(songs);
   };
 
   const listOfTracks = tracks.map((track, index) => (
@@ -67,33 +65,12 @@ const App = () => {
           <p className="lead mb-4">
             Enter a genre/artist/track to get the top 10 tracks for it
           </p>
-          <div className="d-grid d-sm-flex justify-content-sm-center">
-            <InputGroup className="mb-3">
-              <DropdownButton
-                onSelect={handleDropdownSelect}
-                variant="secondary"
-                title={selectedDropdown}
-                id="input-group-dropdown-1"
-              >
-                <Dropdown.Item eventKey="Track">Track</Dropdown.Item>
-                <Dropdown.Item eventKey="Playlist">Playlist</Dropdown.Item>
-                <Dropdown.Item eventKey="Artist">Artist</Dropdown.Item>
-              </DropdownButton>
-              <FormControl
-                placeholder="Search"
-                aria-label="User search query"
-                onChange={(e) => setSearchKey(e.target.value)}
-                aria-describedby="generate-song-list-btn"
-              />
-              <Button
-                onClick={search}
-                variant="primary"
-                id="generate-song-list-btn"
-              >
-                Generate
-              </Button>
-            </InputGroup>
-          </div>
+          <SearchBar
+            onSearch={search}
+            onInputEnter={setSearchKey}
+            currentSelectedDropdown={selectedDropdown}
+            onDropdownSelect={handleDropdownSelect}
+          />
         </div>
       </div>
       <div className="generated-list">
