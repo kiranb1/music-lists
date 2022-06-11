@@ -15,6 +15,10 @@
   }
 }
 
+.loading-container {
+  margin-top: 20%;
+}
+
 .track-detail {
   transition: all 0.3s;
 
@@ -38,6 +42,10 @@
 
   .playlist-likes {
     color: red;
+
+    .heart-icon {
+      margin-top: -4px;
+    }
   }
 
   .play-btn {

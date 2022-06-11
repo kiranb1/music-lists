@@ -5,13 +5,18 @@ import LoginBtn from "./components/LoginBtn";
 import { useState, useEffect } from "react";
 import SearchBar from "./components/SearchBar";
 
-import { searchForTracks, searchForArtist, searchForPlaylists } from "./api";
+import {
+  searchForTracks,
+  searchForArtist,
+  searchForPlaylists,
+} from "./api/services/Search";
 
 const App = () => {
   const [searchKey, setSearchKey] = useState("submarine");
   const [token, setToken] = useState("");
   const [tracks, setTracks] = useState([]);
-  const [selectedDropdown, setSelectedDropdown] = useState("Track");
+  const [selectedDropdown, setSelectedDropdown] = useState("Playlist");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -44,7 +49,7 @@ const App = () => {
   const extractPlaylists = (playlists) => {
     // sort by popularity
     playlists.sort((a, b) => b.popularity - a.popularity);
-
+    setIsLoading(false);
     setTracks(playlists);
   };
 
@@ -54,12 +59,13 @@ const App = () => {
     } else if (selectedDropdown === "Artist") {
       searchForArtist(token, searchKey, extractSongs);
     } else {
+      setIsLoading(true);
       searchForPlaylists(token, searchKey, extractPlaylists);
     }
   };
 
   const listOfTracks = tracks.map((track, index) => (
-    <TrackListItem key={index} track={track} />
+    <TrackListItem key={index} item={track} token={token} />
   ));
 
   return (
@@ -68,9 +74,7 @@ const App = () => {
         {!token ? <LoginBtn /> : ""}
         <h1 className="display-5 fw-bold">Music list generator</h1>
         <div className="col-lg-6 mx-auto">
-          <p className="lead mb-4">
-            Enter a genre/artist/track to get the top 10 tracks/playlists for it
-          </p>
+          <p className="lead mb-4">Search by playlist/artist/track</p>
           <SearchBar
             onSearch={search}
             onInputEnter={setSearchKey}
@@ -81,6 +85,11 @@ const App = () => {
       </div>
       <div className="generated-list">
         <ListGroup as="ol">{listOfTracks}</ListGroup>
+        {isLoading && (
+          <div className="loading-container d-flex justify-content-center">
+            <div className="spinner-border" role="status"></div>
+          </div>
+        )}
       </div>
     </div>
   );
