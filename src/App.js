@@ -44,6 +44,7 @@ const App = () => {
   const extractPlaylists = (playlists) => {
     // sort by popularity
     playlists.sort((a, b) => b.popularity - a.popularity);
+
     setTracks(playlists);
   };
 
@@ -79,9 +80,7 @@ const App = () => {
         </div>
       </div>
       <div className="generated-list">
-        <ListGroup as="ol" numbered>
-          {listOfTracks}
-        </ListGroup>
+        <ListGroup as="ol">{listOfTracks}</ListGroup>
       </div>
     </div>
   );

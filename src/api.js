@@ -35,17 +35,52 @@ export const searchForPlaylists = async (
   searchKey,
   extractPlaylists
 ) => {
-  const res = await search(
-    {
-      q: searchKey,
-      type: "playlist",
-      limit: 10,
-    },
-    "https://api.spotify.com/v1/search",
-    token
-  );
+  await axios
+    .get("https://api.spotify.com/v1/search", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        q: searchKey,
+        type: "playlist",
+        limit: 10,
+      },
+    })
+    .then((playlists) => {
+      getPlaylistsAndSet(
+        playlists.data.playlists.items,
+        token,
+        extractPlaylists
+      );
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 
-  extractPlaylists(res.data.playlists.items);
+async function getPlaylistsAndSet(playlists, token, extractPlaylists) {
+  const newPlaylists = [];
+  for (const playlist of playlists) {
+    const newPlaylist = await getPlaylist(token, playlist.id);
+    newPlaylists.push(newPlaylist);
+  }
+  extractPlaylists(newPlaylists);
+}
+
+export const getPlaylist = async (token, playlistId) => {
+  try {
+    const res = await axios.get(
+      `https://api.spotify.com/v1/playlists/${playlistId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const searchForArtist = async (token, searchKey, extractSongs) => {

@@ -1,7 +1,7 @@
 @import "custom";
 
 * {
-  font-family: sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .main-container {
@@ -15,11 +15,35 @@
   }
 }
 
-.track-link {
-  color: #39311d;
-  text-decoration: none;
+.track-detail {
+  transition: all 0.3s;
+
+  a {
+    color: inherit;
+  }
+
   &:hover {
-    color: #7e7474;
-    text-decoration: underline;
+    background-color: #f0e9e9;
+  }
+
+  .playlist-total-tracks,
+  .artist-name {
+    color: #baa571;
+  }
+
+  .playlist-likes,
+  .playlist-total-tracks {
+    width: 100px;
+  }
+
+  .playlist-likes {
+    color: red;
+  }
+
+  .play-btn {
+    fill: #594f36;
+    &:hover {
+      fill: black;
+    }
   }
 }
