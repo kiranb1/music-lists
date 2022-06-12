@@ -15,6 +15,7 @@ export const search = async (params, url, token) => {
   }
 };
 
+// Search for tracks based on search term
 export const searchForTracks = async (token, searchKey, extractSongs) => {
   const res = await search(
     {
@@ -23,86 +24,44 @@ export const searchForTracks = async (token, searchKey, extractSongs) => {
       limit: 10,
     },
     "https://api.spotify.com/v1/search",
-    token,
-    extractSongs
+    token
   );
 
-  extractSongs(res.data.tracks.items);
+  const tracks = res.data.tracks.items;
+  getTrackAndSet(tracks, token, extractSongs);
 };
 
-export const searchForPlaylists = async (
-  token,
-  searchKey,
-  extractPlaylists
-) => {
-  await axios
-    .get("https://api.spotify.com/v1/search", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: {
-        q: searchKey,
-        type: "playlist",
-        limit: 10,
-      },
-    })
-    .then((playlists) => {
-      getPlaylistsAndSet(
-        playlists.data.playlists.items,
-        token,
-        extractPlaylists
-      );
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-const getPlaylistsAndSet = async (playlists, token, extractPlaylists) => {
-  const newPlaylists = [];
-  for (const playlist of playlists) {
-    const newPlaylist = await getPlaylist(token, playlist.id);
-    newPlaylist.isFollowing = await checkPlaylistFollowed(playlist.id, token);
-    newPlaylists.push(newPlaylist);
+// Add isLiked key to track
+const getTrackAndSet = async (tracks, token, extractSongs) => {
+  const newTracks = [];
+  for (const track of tracks) {
+    track.isLiked = await checkForTrack(track.id, token);
+    newTracks.push(track);
   }
-  extractPlaylists(newPlaylists);
+  extractSongs(newTracks);
 };
 
-const checkPlaylistFollowed = async (playlistId, token) => {
+// Check if track already exists in User's liked songs
+export const checkForTrack = async (trackId, token) => {
   try {
     const res = await axios.get(
-      `https://api.spotify.com/v1/playlists/${playlistId}/followers/contains`,
+      "https://api.spotify.com/v1/me/tracks/contains",
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          ids: `${process.env.REACT_APP_USERNAME}`,
+          ids: trackId,
         },
       }
     );
-    return res;
+    return res.data[0];
   } catch (err) {
     console.log(err);
   }
 };
 
-const getPlaylist = async (token, playlistId) => {
-  try {
-    const res = await axios.get(
-      `https://api.spotify.com/v1/playlists/${playlistId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return res;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
+// Search for artist and return their top 10 tracks
 export const searchForArtist = async (token, searchKey, extractSongs) => {
   try {
     const res = await axios.get("https://api.spotify.com/v1/search", {

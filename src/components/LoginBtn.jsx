@@ -4,7 +4,7 @@ export default function LoginBtn() {
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
   const RESPONSE_TYPE = "token";
   const SCOPE =
-    "playlist-read-private playlist-modify-public playlist-modify-private";
+    "playlist-read-private playlist-modify-public playlist-modify-private user-library-read user-library-modify";
 
   return (
     <a

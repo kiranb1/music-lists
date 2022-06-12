@@ -1,19 +1,18 @@
 import axios from "axios";
 
-export const unfollowPlaylist = async (
-  playlistId,
-  token,
-  updatePlaylistLikes
-) => {
+export const unlikeTrack = async (trackId, token, updateTrackLikeState) => {
   await axios
-    .delete(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
+    .delete("https://api.spotify.com/v1/me/tracks/", {
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+      params: {
+        ids: trackId,
       },
     })
     .then((res) => {
       if (res.status === 200) {
-        updatePlaylistLikes("unfollow");
+        updateTrackLikeState("unlike");
       }
     })
     .catch((err) => {

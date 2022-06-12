@@ -5,17 +5,15 @@ import LoginBtn from "./components/LoginBtn";
 import { useState, useEffect } from "react";
 import SearchBar from "./components/SearchBar";
 
-import {
-  searchForTracks,
-  searchForArtist,
-  searchForPlaylists,
-} from "./api/services/Search";
+import { searchForTracks, searchForArtist } from "./api/services/Search";
+
+import { searchForPlaylists } from "./api/services/PlaylistSearch";
 
 const App = () => {
   const [searchKey, setSearchKey] = useState("submarine");
   const [token, setToken] = useState("");
   const [tracks, setTracks] = useState([]);
-  const [selectedDropdown, setSelectedDropdown] = useState("Playlist");
+  const [selectedDropdown, setSelectedDropdown] = useState("Track");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -43,6 +41,7 @@ const App = () => {
   const extractSongs = (songs) => {
     // sort by popularity
     songs.sort((a, b) => b.popularity - a.popularity);
+    setIsLoading(false);
     setTracks(songs);
   };
 
@@ -54,12 +53,12 @@ const App = () => {
   };
 
   const search = () => {
+    setIsLoading(true);
     if (selectedDropdown === "Track") {
       searchForTracks(token, searchKey, extractSongs);
     } else if (selectedDropdown === "Artist") {
       searchForArtist(token, searchKey, extractSongs);
     } else {
-      setIsLoading(true);
       searchForPlaylists(token, searchKey, extractPlaylists);
     }
   };
@@ -84,7 +83,7 @@ const App = () => {
         </div>
       </div>
       <div className="generated-list">
-        <ListGroup as="ol">{listOfTracks}</ListGroup>
+        {!isLoading && <ListGroup as="ol">{listOfTracks}</ListGroup>}
         {isLoading && (
           <div className="loading-container d-flex justify-content-center">
             <div className="spinner-border" role="status"></div>

@@ -1,19 +1,17 @@
 import { Row, Col } from "react-bootstrap";
 import ListGroup from "react-bootstrap/ListGroup";
-import {
-  FaRegHeart,
-  FaHeart,
-  FaPlayCircle,
-  FaLaptopHouse,
-} from "react-icons/fa";
+import { FaRegHeart, FaHeart, FaPlayCircle } from "react-icons/fa";
 
 import { followPlaylist } from "../api/services/FollowPlaylist";
 import { unfollowPlaylist } from "../api/services/UnfollowPlaylist";
+import { likeTrack } from "../api/services/LikeTrack";
+import { unlikeTrack } from "../api/services/UnlikeTrack";
 
 import { useState, useEffect } from "react";
 
 export default function TrackListItem({ item, token }) {
   const [itemFollowed, setIsFollowing] = useState();
+  const [itemLiked, setIsItemLiked] = useState();
   const [playlistLikes, setPlaylistLikes] = useState();
 
   const track = item;
@@ -21,21 +19,35 @@ export default function TrackListItem({ item, token }) {
   let listElement = "";
 
   useEffect(() => {
-    setIsFollowing(item.isFollowing.data[0]);
-    setPlaylistLikes(playlist.followers.total);
-  }, [item, playlist]);
+    if (playlist) {
+      setIsFollowing(item.isFollowing.data[0]);
+      setPlaylistLikes(playlist.followers.total);
+    } else {
+      setIsItemLiked(item.isLiked);
+    }
+  }, [item.isFollowing, item.isLiked, playlist]);
 
-  const followOrLikeMe = (e) => {
+  const followOrLikePlaylist = (e) => {
     e.preventDefault();
     const isFollowedOrLiked = e.target.getAttribute("data-icon") === null;
     if (isFollowedOrLiked) {
-      unfollowPlaylist(playlist.id, token, updateLikes);
+      unfollowPlaylist(playlist.id, token, updatePlaylistLikes);
     } else {
-      followPlaylist(playlist.id, token, updateLikes);
+      followPlaylist(playlist.id, token, updatePlaylistLikes);
     }
   };
 
-  const updateLikes = (action) => {
+  const likeCurrentTrack = (e) => {
+    e.preventDefault();
+    const isLiked = e.target.getAttribute("data-icon") === null;
+    if (isLiked) {
+      unlikeTrack(track.id, token, updateTrackLikeState);
+    } else {
+      likeTrack(track.id, token, updateTrackLikeState);
+    }
+  };
+
+  const updatePlaylistLikes = (action) => {
     if (action === "follow") {
       // update icon to fill
       setIsFollowing(true);
@@ -49,6 +61,16 @@ export default function TrackListItem({ item, token }) {
     }
   };
 
+  const updateTrackLikeState = (action) => {
+    if (action === "like") {
+      // update icon to fill
+      setIsItemLiked(true);
+    } else {
+      // update icon to fill
+      setIsItemLiked(false);
+    }
+  };
+
   if (playlist) {
     listElement = (
       <a href={playlist.uri} className="track-detail text-decoration-none">
@@ -57,10 +79,10 @@ export default function TrackListItem({ item, token }) {
           <Col className="d-flex justify-content-sm-end col-12 col-sm-6">
             <div className="playlist-total-tracks me-4">{`${playlist.tracks.total} tracks`}</div>
             <div
-              className="playlist-likes me-4 text-danger"
-              onClick={followOrLikeMe}
+              className="playlist-likes me-4"
+              onClick={(e) => followOrLikePlaylist(e)}
             >
-              {/* Like/follow button */}
+              {/* Follow button */}
               {itemFollowed ? (
                 <FaHeart
                   data-icon="fill"
@@ -91,6 +113,25 @@ export default function TrackListItem({ item, token }) {
               <span className="artist-name">{track.artists[0].name}</span>
             </Col>
             <Col className="d-flex justify-content-end col-12 col-sm-6">
+              <div
+                className="me-4 track-likes"
+                onClick={(e) => likeCurrentTrack(e)}
+              >
+                {/* Like button */}
+                {itemLiked ? (
+                  <FaHeart
+                    data-icon="fill"
+                    className="me-1 heart-icon"
+                    size={15}
+                  />
+                ) : (
+                  <FaRegHeart
+                    data-icon="line"
+                    className="me-1 heart-icon"
+                    size={15}
+                  />
+                )}
+              </div>
               <FaPlayCircle className="play-btn" size="1.5em" />
             </Col>
           </Row>

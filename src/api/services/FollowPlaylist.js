@@ -1,6 +1,10 @@
 import axios from "axios";
 
-export const followPlaylist = async (playlistId, token, updateLikes) => {
+export const followPlaylist = async (
+  playlistId,
+  token,
+  updatePlaylistLikes
+) => {
   await axios
     .put(
       `https://api.spotify.com/v1/playlists/${playlistId}/followers`,
@@ -17,7 +21,7 @@ export const followPlaylist = async (playlistId, token, updateLikes) => {
     )
     .then((res) => {
       if (res.status === 200) {
-        updateLikes("follow");
+        updatePlaylistLikes("follow");
       }
     })
     .catch((err) => {
