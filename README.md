@@ -12,5 +12,7 @@ You may also see any lint errors in the console.
 
 ### Features
 
-- Lists top 10 tracks based on search term in order of popularity
-- Track link in Spotify app
+- Lists top 10 tracks based on search term and category (playlist, artist, track) in order of popularity
+- Track/playlist link to open in Spotify app
+- Like/unlike a track
+- Follow/unfollow a playlist
