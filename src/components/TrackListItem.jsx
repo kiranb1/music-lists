@@ -122,13 +122,13 @@ export default function TrackListItem({ item, token }) {
                   <FaHeart
                     data-icon="fill"
                     className="me-1 heart-icon"
-                    size={15}
+                    size={20}
                   />
                 ) : (
                   <FaRegHeart
                     data-icon="line"
                     className="me-1 heart-icon"
-                    size={15}
+                    size={20}
                   />
                 )}
               </div>

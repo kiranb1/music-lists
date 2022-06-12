@@ -43,6 +43,9 @@
   .playlist-likes,
   .track-likes {
     color: red;
+    &:hover {
+      color: rgb(131, 26, 26);
+    }
 
     .heart-icon {
       margin-top: -4px;
